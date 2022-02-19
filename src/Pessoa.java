@@ -16,6 +16,6 @@ public abstract class Pessoa {
     }
 
     public String toString(){
-        return "Nome: " + get_nome() + ".";
+        return this.get_nome() + ".";
     }
 }

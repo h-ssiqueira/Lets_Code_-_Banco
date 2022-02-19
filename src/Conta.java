@@ -2,9 +2,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public abstract class Conta {
-    protected BigDecimal saldo;
+    protected BigDecimal saldo, taxa;
     protected Pessoa titular;
-    protected float taxa;
     protected String numero, agencia;
 
     public Conta(String numero, Pessoa titular, String agencia){
@@ -13,9 +12,9 @@ public abstract class Conta {
         this.saldo = BigDecimal.valueOf(0);
         this.agencia = agencia;
         if(this.titular instanceof PessoaJuridica)
-            this.taxa = (float) 1.005;
+            this.taxa = BigDecimal.valueOf(1.005); // 0,5%
         else
-            this.taxa = 1;
+            this.taxa = BigDecimal.valueOf(1);
     }
 
     public abstract boolean sacar(BigDecimal valor);
@@ -32,14 +31,14 @@ public abstract class Conta {
     }
 
     public BigDecimal get_saldo(){
-        return this.saldo.setScale(2, RoundingMode.CEILING);
+        return this.saldo;
     }
 
     public String get_titular(){
         return this.titular.toString();
     }
 
-    public float get_taxa(){
+    public BigDecimal get_taxa(){
         return this.taxa;
     }
 
@@ -60,11 +59,12 @@ public abstract class Conta {
         this.titular = titular;
     }
 
-    public void set_taxa(float taxa){
+    public void set_taxa(BigDecimal taxa){
         this.taxa = taxa;
     }
 
     public String toString(){
-        return "Conta: " + get_numero() + ". Agencia: " + get_agencia() + ". Titular: " + get_titular() + ". Taxa: " + get_taxa() + "%.\nSaldo: R$" + get_saldo() + ".\n";
+        return "Conta: " + this.get_numero() + ". Agência: " + this.get_agencia() + ".\nTitular: " + this.get_titular() + "Taxa: " + (this.get_taxa().subtract(BigDecimal.valueOf(1))).multiply(BigDecimal.valueOf(100)) + "%.\nSaldo: R$" + this.get_saldo().setScale(2, RoundingMode.HALF_UP) + ".\n";
     }
+
 }

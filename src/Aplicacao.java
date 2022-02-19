@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -7,6 +8,7 @@ public class Aplicacao{
         Scanner input = new Scanner(System.in);
         Banco banco = new Banco();
         BigDecimal valor = BigDecimal.valueOf(0);
+        Conta conta;
         int opcao_menu = 1, tipo_conta = 0;
         boolean excecao = false;
         String nome = "", CPF_CNPJ = "", numero_conta = "", agencia = "", numero_conta_remetente = "", numero_conta_destinatario = "";
@@ -32,16 +34,18 @@ public class Aplicacao{
             switch(opcao_menu){ // Ação a se tomar de acordo com a escolha do menu
                 case 1: // Abre nova conta
                     // Coleta inicialmnte as informações da pessoa
-                    System.out.print("Digite o nome do titular da nova conta: ");
-                    nome = input.nextLine();
+                    do{
+                        System.out.print("Digite o nome do titular da nova conta: ");
+                        nome = input.nextLine();
+                    }while(!nome.matches("[A-Za-z]+")); // Verifica se o nome possui apenas letras
                     do{
                         System.out.print("Insira o CPF/CNPJ do titular: ");
                         CPF_CNPJ = input.nextLine();
                     }while(!CPF_CNPJ.matches("[0-9]+") || CPF_CNPJ.length() != 11 && CPF_CNPJ.length() != 14); // Confere se há somente 11 ou 14 números
                     if(CPF_CNPJ.length() == 11)
-                        titular = new PessoaFisica(nome, CPF_CNPJ.substring(0,3) + '.' + CPF_CNPJ.substring(3,6) + '.' + CPF_CNPJ.substring(6,9) + '-' + CPF_CNPJ.substring(9)); // Envia o CPF formatado (00000000000 -> 000.000.000-00)
+                        titular = new PessoaFisica(nome, formatar_CPF(CPF_CNPJ));
                     else
-                        titular = new PessoaJuridica(nome, CPF_CNPJ.substring(0,2) + "." + CPF_CNPJ.substring(2,5) + "." + CPF_CNPJ.substring(5,8) + "/" + CPF_CNPJ.substring(8,12) + "-" + CPF_CNPJ.substring(12)); // Envia o CNPJ formatado (00000000000000 -> 00.000.000/0000-00)
+                        titular = new PessoaJuridica(nome, formatar_CNPJ(CPF_CNPJ));
                     // Depois coleta-se as informações da conta a ser criada
                     do{
                         try{
@@ -55,6 +59,7 @@ public class Aplicacao{
                         catch(InputMismatchException e){
                             System.out.println("\nInsira um número inteiro dentro do intervalo para prosseguir.");
                             input.nextLine();
+                            excecao = true;
                         }
                     }while(excecao || tipo_conta < 1 || tipo_conta > 3 || tipo_conta == 3 && titular instanceof PessoaJuridica);
                     input.nextLine(); // Limpa o buffer (remove enter)
@@ -85,11 +90,12 @@ public class Aplicacao{
                         }
                         catch(InputMismatchException e){
                             System.out.println("Insira um número positivo para continuar.");
+                            input.nextLine();
                             excecao = true;
                         }
                     }while(excecao || valor.compareTo(BigDecimal.valueOf(0)) <= 0); // Verifica se o valor é positivo
                     if(banco.sacar(numero_conta, valor))
-                        System.out.println("R$" + valor + " sacado com sucesso.");
+                        System.out.println("R$" + valor.setScale(2, RoundingMode.HALF_UP) + " sacado com sucesso.");
                     else
                         System.out.println("Erro ao sacar: valor insuficiente na conta ou conta inexistente.");
                     break;
@@ -106,11 +112,12 @@ public class Aplicacao{
                         }
                         catch(InputMismatchException e){
                             System.out.println("Insira um número positivo para continuar.");
+                            input.nextLine();
                             excecao = true;
                         }
                     }while(excecao || valor.compareTo(BigDecimal.valueOf(0)) <= 0); // Verifica se o valor é positivo
                     if(banco.depositar(numero_conta, valor))
-                        System.out.println("R$" + valor + " depositado com sucesso.");
+                        System.out.println("R$" + valor.setScale(2, RoundingMode.HALF_UP) + " depositado com sucesso.");
                     else
                         System.out.println("Erro ao depositar: conta inexistente ou do tipo investimento.");
                     break;
@@ -131,15 +138,16 @@ public class Aplicacao{
                         }
                         catch(InputMismatchException e){
                             System.out.println("Insira um número positivo para continuar.");
+                            input.nextLine();
                             excecao = true;
                         }
                     }while(excecao || valor.compareTo(BigDecimal.valueOf(0)) <= 0); // Verifica se o valor é positivo
                     if(banco.transferir(numero_conta_destinatario, numero_conta_remetente, valor))
-                        System.out.println("Transferência de R$" + valor + " da conta " + numero_conta_remetente + " para a conta " + numero_conta_destinatario + " realizado com sucesso.");
+                        System.out.println("Transferência de R$" + valor.setScale(2, RoundingMode.HALF_UP) + " da conta " + numero_conta_remetente + " para a conta " + numero_conta_destinatario + " realizado com sucesso.");
                     else
                         System.out.println("Não foi possível realizar a transferência por um dos seguintes motivos:\n\tSaldo do remetente insuficiente.\n\tConta do remetente inexistente no sistema.\n\tConta do destinatário inexistente no sistema.");
                     break;
-                case 5: // Investir (conta investimento) TODO
+                case 5: // Investir (conta investimento)
                     do{
                         System.out.print("\nInsira o número da conta que receberá o investimento.\n-> ");
                         numero_conta = input.nextLine();
@@ -152,11 +160,12 @@ public class Aplicacao{
                         }
                         catch(InputMismatchException e){
                             System.out.println("Insira um número positivo para continuar.");
+                            input.nextLine();
                             excecao = true;
                         }
                     }while(excecao || valor.compareTo(BigDecimal.valueOf(0)) <= 0); // Verifica se o valor é positivo
                     if(banco.investir(numero_conta, valor))
-                        System.out.println("R$" + valor + " investido com sucesso.");
+                        System.out.println("R$" + valor.setScale(2, RoundingMode.HALF_UP) + " investido com sucesso.");
                     else
                         System.out.println("Erro ao depositar: conta inexistente ou dos tipos corrente/poupança.");
                     break;
@@ -167,14 +176,23 @@ public class Aplicacao{
                         numero_conta = input.nextLine();
                     }while(!numero_conta.matches("[0-9]+")); // Verifica se há somente números na string
                     // Para procurar na lista de contas se a mesma existe
-                    valor = banco.consulta_saldo(numero_conta);
-                    if(valor == null) // Caso a conta não seja encontrada na lista de contas, o valor é nulo
+                    conta = banco.procurar_conta(numero_conta);
+                    if(conta == null) // Caso a conta não seja encontrada na lista de contas, o valor é nulo
                         System.out.println("Conta inexistente no sistema.");
                     else
-                        System.out.println("Saldo da conta " + numero_conta + ": R$ " + valor + ".");
+                        System.out.println(conta.toString());
                     break;
             }
         }while(opcao_menu != 0);
     }
 
+    // Envia o CPF formatado (00000000000 -> 000.000.000-00)
+    public static String formatar_CPF(String CPF){
+        return CPF.substring(0,3) + '.' + CPF.substring(3,6) + '.' + CPF.substring(6,9) + '-' + CPF.substring(9);
+    }
+
+    // Envia o CNPJ formatado (00000000000000 -> 00.000.000/0000-00)
+    public static String formatar_CNPJ(String CNPJ){
+        return CNPJ.substring(0,2) + "." + CNPJ.substring(2,5) + "." + CNPJ.substring(5,8) + "/" + CNPJ.substring(8,12) + "-" + CNPJ.substring(12);
+    }
 }
