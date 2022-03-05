@@ -16,4 +16,4 @@ Crie as funcionalidades: abrir conta, sacar, depositar, transferência, investir
 Use a classe "Aplicacao" para criar seu método "main" e demonstrar o funcionamento do seu código.
 
 ## Diagrama de classes
-![Diagrama de classes](Diagrama%20de%20classes.png)
+![Diagrama de classes](DiagramaDeClasses.png)

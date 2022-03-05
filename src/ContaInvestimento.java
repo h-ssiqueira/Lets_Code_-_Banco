@@ -12,8 +12,8 @@ public class ContaInvestimento extends Conta{
     }
 
     public boolean sacar(BigDecimal valor){
-        if(this.get_saldo().compareTo(valor.multiply(this.get_taxa())) >= 0){ // Confere se há saldo disponível para saque com possíveis taxas
-            this.set_saldo(this.get_saldo().subtract(valor.multiply(this.get_taxa()))); // Aplica a taxa ao atualizar o valor (definida no construtor)
+        if(this.getSaldo().compareTo(valor.multiply(this.getTaxa())) >= 0){ // Confere se há saldo disponível para saque com possíveis taxas
+            this.setSaldo(this.getSaldo().subtract(valor.multiply(this.getTaxa()))); // Aplica a taxa ao atualizar o valor (definida no construtor)
             return true;
         }
         return false;
@@ -21,36 +21,36 @@ public class ContaInvestimento extends Conta{
 
     public boolean transferencia(BigDecimal valor, boolean destinatario){
         if(destinatario){ // Destinatário somente recebe o dinheiro
-            this.set_saldo(this.get_saldo().add(valor));
+            this.setSaldo(this.getSaldo().add(valor));
             return true;
         }
-        else if(this.get_saldo().compareTo(valor.multiply(this.get_taxa())) >= 0){ // Remetente desconta o dinheiro com possíveis taxas com conferência de disponibilidade de saldo
-            this.set_saldo(this.get_saldo().subtract(valor.multiply(this.get_taxa()))); // Atualiza valor do saldo com possíveis taxas
+        else if(this.getSaldo().compareTo(valor.multiply(this.getTaxa())) >= 0){ // Remetente desconta o dinheiro com possíveis taxas com conferência de disponibilidade de saldo
+            this.setSaldo(this.getSaldo().subtract(valor.multiply(this.getTaxa()))); // Atualiza valor do saldo com possíveis taxas
             return true;
         }
         return false;
     }
 
     public void investir(BigDecimal valor){
-        this.set_saldo(valor.add(this.get_saldo()));
+        this.setSaldo(valor.add(this.getSaldo()));
     }
 
     public void investindo(){
-        super.set_saldo(super.get_saldo().multiply(this.get_taxa_rendimento()));
+        super.setSaldo(super.getSaldo().multiply(this.getTaxaRendimento()));
     }
 
     // Getters
-    public BigDecimal get_taxa_rendimento(){
+    public BigDecimal getTaxaRendimento(){
         return this.taxa_rendimento;
     }
 
     // Setters
-    public void set_taxa_rendimento(BigDecimal taxa_rendimento){
+    public void setTaxaRendimento(BigDecimal taxa_rendimento){
         this.taxa_rendimento = taxa_rendimento;
     }
 
     @Override
     public String toString(){
-        return super.toString() + "Taxa de rendimento: " + (this.get_taxa_rendimento().subtract(BigDecimal.valueOf(1))).multiply(BigDecimal.valueOf(100)) + "%.\n";
+        return super.toString() + "Taxa de rendimento: " + (this.getTaxaRendimento().subtract(BigDecimal.valueOf(1))).multiply(BigDecimal.valueOf(100)) + "%.\n";
     }
 }

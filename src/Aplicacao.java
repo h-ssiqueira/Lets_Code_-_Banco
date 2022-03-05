@@ -1,6 +1,7 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.InputMismatchException;
+import java.util.MissingFormatArgumentException;
 import java.util.Scanner;
 
 public class Aplicacao{
@@ -43,16 +44,14 @@ public class Aplicacao{
                         CPF_CNPJ = input.nextLine();
                     }while(!CPF_CNPJ.matches("[0-9]+") || CPF_CNPJ.length() != 11 && CPF_CNPJ.length() != 14); // Confere se há somente 11 ou 14 números
                     if(CPF_CNPJ.length() == 11)
-                        titular = new PessoaFisica(nome, formatar_CPF(CPF_CNPJ));
+                        titular = new PessoaFisica(nome, formatarCPF(CPF_CNPJ));
                     else
-                        titular = new PessoaJuridica(nome, formatar_CNPJ(CPF_CNPJ));
+                        titular = new PessoaJuridica(nome, formatarCNPJ(CPF_CNPJ));
                     // Depois coleta-se as informações da conta a ser criada
                     do{
                         try{
                             excecao = false;
-                            System.out.println("Insira o tipo de conta a ser criada.\n\t1 - Conta corrente.\n\t2 - Conta investimento.");
-                            if(titular instanceof PessoaFisica)
-                                System.out.println("\t3 - Conta poupança.");
+                            System.out.println("Insira o tipo de conta a ser criada.\n\t1 - Conta corrente.\n\t2 - Conta investimento.\n\t3 - Conta poupança.");
                             System.out.print("-> ");
                             tipo_conta = input.nextInt();
                         }
@@ -61,7 +60,7 @@ public class Aplicacao{
                             input.nextLine();
                             excecao = true;
                         }
-                    }while(excecao || tipo_conta < 1 || tipo_conta > 3 || tipo_conta == 3 && titular instanceof PessoaJuridica);
+                    }while(excecao || tipo_conta < 1 || tipo_conta > 3);
                     input.nextLine(); // Limpa o buffer (remove enter)
                     do{
                         System.out.print("Insira o número da nova conta.\n-> ");
@@ -72,10 +71,15 @@ public class Aplicacao{
                         agencia = input.nextLine();
                     }while(!agencia.matches("[0-9]+")); // Continua até que a string tenha apenas números
                     // Para depois criar a conta no banco
-                    if(banco.abrir_conta(tipo_conta == 1 ? new ContaCorrente(numero_conta, titular, agencia) : tipo_conta == 2 ? new ContaInvestimento(numero_conta, titular, agencia) : new ContaPoupanca(numero_conta, titular, agencia)))
-                        System.out.println("Conta criada com sucesso.");
-                    else
-                        System.out.println("Falha ao criar nova conta: número de conta já existente no sistema.");
+                    try{
+                        if(banco.abrirConta(tipo_conta == 1 ? new ContaCorrente(numero_conta, titular, agencia) : tipo_conta == 2 ? new ContaInvestimento(numero_conta, titular, agencia) : new ContaPoupanca(numero_conta, titular, agencia)))
+                            System.out.println("Conta criada com sucesso.");
+                        else
+                            System.out.println("Falha ao criar nova conta: número de conta já existente no sistema.");
+                    }
+                    catch(MissingFormatArgumentException e){
+                        System.out.println(e.getFormatSpecifier());
+                    }
                     break;
                 case 2: // Sacar
                     do{
@@ -176,7 +180,7 @@ public class Aplicacao{
                         numero_conta = input.nextLine();
                     }while(!numero_conta.matches("[0-9]+")); // Verifica se há somente números na string
                     // Para procurar na lista de contas se a mesma existe
-                    conta = banco.procurar_conta(numero_conta);
+                    conta = banco.procurarConta(numero_conta);
                     if(conta == null) // Caso a conta não seja encontrada na lista de contas, o valor é nulo
                         System.out.println("Conta inexistente no sistema.");
                     else
@@ -187,12 +191,12 @@ public class Aplicacao{
     }
 
     // Envia o CPF formatado (00000000000 -> 000.000.000-00)
-    public static String formatar_CPF(String CPF){
+    public static String formatarCPF(String CPF){
         return CPF.substring(0,3) + '.' + CPF.substring(3,6) + '.' + CPF.substring(6,9) + '-' + CPF.substring(9);
     }
 
     // Envia o CNPJ formatado (00000000000000 -> 00.000.000/0000-00)
-    public static String formatar_CNPJ(String CNPJ){
+    public static String formatarCNPJ(String CNPJ){
         return CNPJ.substring(0,2) + "." + CNPJ.substring(2,5) + "." + CNPJ.substring(5,8) + "/" + CNPJ.substring(8,12) + "-" + CNPJ.substring(12);
     }
 }

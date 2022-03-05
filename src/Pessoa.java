@@ -6,16 +6,16 @@ public abstract class Pessoa {
     }
 
     // Getters
-    public String get_nome(){
+    public String getNome(){
         return this.nome;
     }
 
     // Setters
-    public void set_nome(String nome){
+    public void setNome(String nome){
         this.nome = nome;
     }
 
     public String toString(){
-        return this.get_nome() + ".";
+        return this.getNome() + ".";
     }
 }

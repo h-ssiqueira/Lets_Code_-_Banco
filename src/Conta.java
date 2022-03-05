@@ -22,49 +22,49 @@ public abstract class Conta {
     public abstract boolean transferencia(BigDecimal valor, boolean destinatario);
 
     // Getters e setters
-    public String get_numero(){
+    public String getNumero(){
         return this.numero;
     }
 
-    public String get_agencia(){
+    public String getAgencia(){
         return this.agencia;
     }
 
-    public BigDecimal get_saldo(){
+    public BigDecimal getSaldo(){
         return this.saldo;
     }
 
-    public String get_titular(){
+    public String getTitular(){
         return this.titular.toString();
     }
 
-    public BigDecimal get_taxa(){
+    public BigDecimal getTaxa(){
         return this.taxa;
     }
 
     // Setters
-    public void set_numero(String numero){
+    public void setNumero(String numero){
         this.numero = numero;
     }
 
-    public void set_saldo(BigDecimal saldo){
+    protected void setSaldo(BigDecimal saldo){
         this.saldo = saldo;
     }
 
-    public void set_agencia(String agencia){
+    public void setAgencia(String agencia){
         this.agencia = agencia;
     }
 
-    public void set_titular(Pessoa titular){
+    public void setTitular(Pessoa titular){
         this.titular = titular;
     }
 
-    public void set_taxa(BigDecimal taxa){
+    public void setTaxa(BigDecimal taxa){
         this.taxa = taxa;
     }
 
     public String toString(){
-        return "Conta: " + this.get_numero() + ". Agência: " + this.get_agencia() + ".\nTitular: " + this.get_titular() + "Taxa: " + (this.get_taxa().subtract(BigDecimal.valueOf(1))).multiply(BigDecimal.valueOf(100)) + "%.\nSaldo: R$" + this.get_saldo().setScale(2, RoundingMode.HALF_UP) + ".\n";
+        return "Conta: " + this.getNumero() + ". Agência: " + this.getAgencia() + ".\nTitular: " + this.getTitular() + "Taxa: " + (this.getTaxa().subtract(BigDecimal.valueOf(1))).multiply(BigDecimal.valueOf(100)) + "%.\nSaldo: R$" + this.getSaldo().setScale(2, RoundingMode.HALF_UP) + ".\n";
     }
 
 }

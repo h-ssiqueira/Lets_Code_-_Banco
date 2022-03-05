@@ -7,17 +7,17 @@ public class PessoaFisica extends Pessoa{
     }
 
     // Getters
-    public String get_CPF(){
+    public String getCPF(){
         return this.CPF;
     }
 
     // Setters
-    public void set_CPF(String CPF){
+    public void setCPF(String CPF){
         this.CPF = CPF;
     }
 
     @Override
     public String toString(){
-        return super.toString() + " CPF: " + this.get_CPF() + ".\n";
+        return super.toString() + " CPF: " + this.getCPF() + ".\n";
     }
 }
